@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <!-- VARIABLES -->
+  <block type="variables_set" id="cart_list" x="30" y="30">
+    <field name="VAR">CartList</field>
+    <value name="VALUE">
+      <block type="lists_create_empty" id="empty_cart"/>
+    </value>
+  </block>
+  
+  <block type="variables_set" id="products_list" x="30" y="80">
+    <field name="VAR">ProductsList</field>
+    <value name="VALUE">
+      <block type="lists_create_with" id="products_data">
+        <mutation items="3"/>
+        <value name="ADD0">
+          <block type="lists_create_with" id="product1">
+            <mutation items="3"/>
+            <field name="ADD0">Apple</field>
+            <field name="ADD1">50</field>
+            <field name="ADD2">Fresh Red Apple</field>
+          </block>
+        </value>
+        <value name="ADD1">
+          <block type="lists_create_with" id="product2">
+            <mutation items="3"/>
+            <field name="ADD0">Banana</field>
+            <field name="ADD1">30</field>
+            <field name="ADD2">Yellow Banana</field>
+          </block>
+        </value>
+        <value name="ADD2">
+          <block type="lists_create_with" id="product3">
+            <mutation items="3"/>
+            <field name="ADD0">Orange</field>
+            <field name="ADD1">40</field>
+            <field name="ADD2">Fresh Orange</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+
+  <!-- ADD TO CART FUNCTION -->
+  <block type="procedures_defnoreturn" id="add_to_cart_proc" x="30" y="200">
+    <mutation/>
+    <field name="NAME">AddToCart</field>
+    <comment pinned="false" h="80" w="160">Adds item to cart or increases quantity if already exists</comment>
+    <statement name="STACK">
+      <block type="variables_set" id="found_flag">
+        <field name="VAR">ItemFound</field>
+        <value name="VALUE">
+          <block type="logic_boolean" id="false_val">
+            <field name="BOOL">FALSE</field>
+          </block>
+        </value>
+        <next>
+          <block type="controls_forEach" id="loop_cart">
+            <field name="VAR">CartItem</field>
+            <value name="LIST">
+              <block type="variables_get" id="get_cart">
+                <field name="VAR">CartList</field>
+              </block>
+            </value>
+            <statement name="DO">
+              <block type="controls_if" id="check_product">
+                <mutation else="0"/>
+                <value name="IF0">
+                  <block type="logic_compare" id="compare_names">
+                    <field name="OP">EQ</field>
+                    <value name="A">
+                      <block type="lists_index" id="get_item_name">
+                        <value name="LIST">
+                          <block type="variables_get" id="get_cart_item">
+                            <field name="VAR">CartItem</field>
+                          </block>
+                        </value>
+                        <value name="INDEX">
+                          <block type="math_number" id="index_0">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="variables_get" id="get_selected_product">
+                        <field name="VAR">SelectedProduct</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="variables_set" id="set_found_true">
+                    <field name="VAR">ItemFound</field>
+                    <value name="VALUE">
+                      <block type="logic_boolean" id="true_val">
+                        <field name="BOOL">TRUE</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="lists_set_index" id="increase_qty">
+                        <field name="WHERE">INDEX</field>
+                        <value name="LIST">
+                          <block type="variables_get" id="get_cart_for_update">
+                            <field name="VAR">CartList</field>
+                          </block>
+                        </value>
+                        <value name="AT">
+                          <block type="math_arithmetic" id="find_index">
+                            <field name="OP">ADD</field>
+                            <value name="A">
+                              <block type="lists_index_of" id="index_of_item">
+                                <value name="LIST">
+                                  <block type="variables_get" id="get_cart_for_index">
+                                    <field name="VAR">CartList</field>
+                                  </block>
+                                </value>
+                                <value name="ITEM">
+                                  <block type="variables_get" id="get_cart_item_ref">
+                                    <field name="VAR">CartItem</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_number" id="add_one">
+                                <field name="NUM">1</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="TO">
+                          <block type="lists_create_with" id="update_item">
+                            <mutation items="4"/>
+                            <value name="ADD0">
+                              <block type="lists_index" id="get_name_copy">
+                                <value name="LIST">
+                                  <block type="variables_get" id="get_item_for_name">
+                                    <field name="VAR">CartItem</field>
+                                  </block>
+                                </value>
+                                <value name="INDEX">
+                                  <block type="math_number" id="idx_1">
+                                    <field name="NUM">1</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="ADD1">
+                              <block type="math_arithmetic" id="increment_qty">
+                                <field name="OP">ADD</field>
+                                <value name="A">
+                                  <block type="lists_index" id="get_current_qty">
+                                    <value name="LIST">
+                                      <block type="variables_get" id="get_item_for_qty">
+                                        <field name="VAR">CartItem</field>
+                                      </block>
+                                    </value>
+                                    <value name="INDEX">
+                                      <block type="math_number" id="idx_2">
+                                        <field name="NUM">2</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="math_number" id="add_qty">
+                                    <field name="NUM">1</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="ADD2">
+                              <block type="lists_index" id="get_price_copy">
+                                <value name="LIST">
+                                  <block type="variables_get" id="get_item_for_price">
+                                    <field name="VAR">CartItem</field>
+                                  </block>
+                                </value>
+                                <value name="INDEX">
+                                  <block type="math_number" id="idx_3">
+                                    <field name="NUM">3</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="ADD3">
+                              <block type="lists_index" id="get_desc_copy">
+                                <value name="LIST">
+                                  <block type="variables_get" id="get_item_for_desc">
+                                    <field name="VAR">CartItem</field>
+                                  </block>
+                                </value>
+                                <value name="INDEX">
+                                  <block type="math_number" id="idx_4">
+                                    <field name="NUM">4</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </next>
+                  </block>
+                </statement>
+              </block>
+            </statement>
+            <next>
+              <block type="controls_if" id="check_if_found">
+                <mutation else="0"/>
+                <value name="IF0">
+                  <block type="logic_negate" id="not_found">
+                    <value name="BOOL">
+                      <block type="variables_get" id="get_found_flag">
+                        <field name="VAR">ItemFound</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="lists_append_list" id="add_new_item">
+                    <value name="LIST">
+                      <block type="variables_get" id="get_cart_for_append">
+                        <field name="VAR">CartList</field>
+                      </block>
+                    </value>
+                    <value name="ITEM">
+                      <block type="lists_create_with" id="new_cart_item">
+                        <mutation items="4"/>
+                        <value name="ADD0">
+                          <block type="variables_get" id="get_prod_name">
+                            <field name="VAR">SelectedProduct</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="math_number" id="qty_one">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                        <value name="ADD2">
+                          <block type="variables_get" id="get_prod_price">
+                            <field name="VAR">SelectedPrice</field>
+                          </block>
+                        </value>
+                        <value name="ADD3">
+                          <block type="variables_get" id="get_prod_desc">
+                            <field name="VAR">SelectedDescription</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+
+  <!-- INCREASE QUANTITY FUNCTION -->
+  <block type="procedures_defnoreturn" id="increase_qty_proc" x="400" y="200">
+    <mutation/>
+    <field name="NAME">IncreaseQuantity</field>
+    <comment pinned="false" h="80" w="160">Increases quantity of selected cart item</comment>
+    <statement name="STACK">
+      <block type="controls_forEach" id="loop_to_increase">
+        <field name="VAR">Item</field>
+        <value name="LIST">
+          <block type="variables_get" id="get_cart_loop">
+            <field name="VAR">CartList</field>
+          </block>
+        </value>
+        <statement name="DO">
+          <block type="controls_if" id="find_item_increase">
+            <mutation else="0"/>
+            <value name="IF0">
+              <block type="logic_compare" id="compare_item_name">
+                <field name="OP">EQ</field>
+                <value name="A">
+                  <block type="lists_index" id="get_name_from_item">
+                    <value name="LIST">
+                      <block type="variables_get" id="get_item_ref">
+                        <field name="VAR">Item</field>
+                      </block>
+                    </value>
+                    <value name="INDEX">
+                      <block type="math_number" id="idx_name">
+                        <field name="NUM">1</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="variables_get" id="get_selected_item">
+                    <field name="VAR">SelectedCartItem</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="lists_set_index" id="update_qty_increase">
+                <field name="WHERE">INDEX</field>
+                <value name="LIST">
+                  <block type="variables_get" id="get_cart_update">
+                    <field name="VAR">CartList</field>
+                  </block>
+                </value>
+                <value name="AT">
+                  <block type="math_arithmetic" id="find_cart_index">
+                    <field name="OP">ADD</field>
+                    <value name="A">
+                      <block type="lists_index_of" id="find_index_pos">
+                        <value name="LIST">
+                          <block type="variables_get" id="get_cart_find">
+                            <field name="VAR">CartList</field>
+                          </block>
+                        </value>
+                        <value name="ITEM">
+                          <block type="variables_get" id="get_item_find">
+                            <field name="VAR">Item</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="math_number" id="add_index">
+                        <field name="NUM">1</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="TO">
+                  <block type="lists_create_with" id="updated_item_increase">
+                    <mutation items="4"/>
+                    <value name="ADD0">
+                      <block type="lists_index" id="preserve_name_inc">
+                        <value name="LIST">
+                          <block type="variables_get" id="get_item_preserve">
+                            <field name="VAR">Item</field>
+                          </block>
+                        </value>
+                        <value name="INDEX">
+                          <block type="math_number" id="idx_preserve_1">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="math_arithmetic" id="inc_qty_value">
+                        <field name="OP">ADD</field>
+                        <value name="A">
+                          <block type="lists_index" id="get_qty_inc">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_item_qty_inc">
+                                <field name="VAR">Item</field>
+                              </block>
+                            </value>
+                            <value name="INDEX">
+                              <block type="math_number" id="idx_qty_inc">
+                                <field name="NUM">2</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="inc_by_one">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD2">
+                      <block type="lists_index" id="preserve_price_inc">
+                        <value name="LIST">
+                          <block type="variables_get" id="get_item_price_inc">
+                            <field name="VAR">Item</field>
+                          </block>
+                        </value>
+                        <value name="INDEX">
+                          <block type="math_number" id="idx_preserve_2">
+                            <field name="NUM">3</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD3">
+                      <block type="lists_index" id="preserve_desc_inc">
+                        <value name="LIST">
+                          <block type="variables_get" id="get_item_desc_inc">
+                            <field name="VAR">Item</field>
+                          </block>
+                        </value>
+                        <value name="INDEX">
+                          <block type="math_number" id="idx_preserve_3">
+                            <field name="NUM">4</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+
+  <!-- DECREASE QUANTITY FUNCTION -->
+  <block type="procedures_defnoreturn" id="decrease_qty_proc" x="770" y="200">
+    <mutation/>
+    <field name="NAME">DecreaseQuantity</field>
+    <comment pinned="false" h="80" w="160">Decreases quantity or removes item if quantity is 1</comment>
+    <statement name="STACK">
+      <block type="controls_forEach" id="loop_to_decrease">
+        <field name="VAR">Item</field>
+        <value name="LIST">
+          <block type="variables_get" id="get_cart_loop_dec">
+            <field name="VAR">CartList</field>
+          </block>
+        </value>
+        <statement name="DO">
+          <block type="controls_if" id="find_item_decrease">
+            <mutation else="0"/>
+            <value name="IF0">
+              <block type="logic_compare" id="compare_item_name_dec">
+                <field name="OP">EQ</field>
+                <value name="A">
+                  <block type="lists_index" id="get_name_from_item_dec">
+                    <value name="LIST">
+                      <block type="variables_get" id="get_item_ref_dec">
+                        <field name="VAR">Item</field>
+                      </block>
+                    </value>
+                    <value name="INDEX">
+                      <block type="math_number" id="idx_name_dec">
+                        <field name="NUM">1</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="variables_get" id="get_selected_item_dec">
+                    <field name="VAR">SelectedCartItem</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="controls_if" id="check_qty_before_dec">
+                <mutation else="1"/>
+                <value name="IF0">
+                  <block type="logic_compare" id="qty_greater_one">
+                    <field name="OP">GT</field>
+                    <value name="A">
+                      <block type="lists_index" id="get_qty_dec">
+                        <value name="LIST">
+                          <block type="variables_get" id="get_item_qty_dec">
+                            <field name="VAR">Item</field>
+                          </block>
+                        </value>
+                        <value name="INDEX">
+                          <block type="math_number" id="idx_qty_dec">
+                            <field name="NUM">2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="math_number" id="one_val">
+                        <field name="NUM">1</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="lists_set_index" id="update_qty_decrease">
+                    <field name="WHERE">INDEX</field>
+                    <value name="LIST">
+                      <block type="variables_get" id="get_cart_update_dec">
+                        <field name="VAR">CartList</field>
+                      </block>
+                    </value>
+                    <value name="AT">
+                      <block type="math_arithmetic" id="find_cart_index_dec">
+                        <field name="OP">ADD</field>
+                        <value name="A">
+                          <block type="lists_index_of" id="find_index_pos_dec">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_cart_find_dec">
+                                <field name="VAR">CartList</field>
+                              </block>
+                            </value>
+                            <value name="ITEM">
+                              <block type="variables_get" id="get_item_find_dec">
+                                <field name="VAR">Item</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="add_index_dec">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="TO">
+                      <block type="lists_create_with" id="updated_item_decrease">
+                        <mutation items="4"/>
+                        <value name="ADD0">
+                          <block type="lists_index" id="preserve_name_dec">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_item_preserve_dec">
+                                <field name="VAR">Item</field>
+                              </block>
+                            </value>
+                            <value name="INDEX">
+                              <block type="math_number" id="idx_preserve_1_dec">
+                                <field name="NUM">1</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="math_arithmetic" id="dec_qty_value">
+                            <field name="OP">MINUS</field>
+                            <value name="A">
+                              <block type="lists_index" id="get_qty_dec_val">
+                                <value name="LIST">
+                                  <block type="variables_get" id="get_item_qty_dec_val">
+                                    <field name="VAR">Item</field>
+                                  </block>
+                                </value>
+                                <value name="INDEX">
+                                  <block type="math_number" id="idx_qty_dec_val">
+                                    <field name="NUM">2</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_number" id="dec_by_one">
+                                <field name="NUM">1</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="ADD2">
+                          <block type="lists_index" id="preserve_price_dec">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_item_price_dec">
+                                <field name="VAR">Item</field>
+                              </block>
+                            </value>
+                            <value name="INDEX">
+                              <block type="math_number" id="idx_preserve_2_dec">
+                                <field name="NUM">3</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="ADD3">
+                          <block type="lists_index" id="preserve_desc_dec">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_item_desc_dec">
+                                <field name="VAR">Item</field>
+                              </block>
+                            </value>
+                            <value name="INDEX">
+                              <block type="math_number" id="idx_preserve_3_dec">
+                                <field name="NUM">4</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+                <statement name="ELSE">
+                  <block type="lists_remove_item" id="remove_item">
+                    <value name="LIST">
+                      <block type="variables_get" id="get_cart_remove">
+                        <field name="VAR">CartList</field>
+                      </block>
+                    </value>
+                    <value name="INDEX">
+                      <block type="math_arithmetic" id="find_remove_index">
+                        <field name="OP">ADD</field>
+                        <value name="A">
+                          <block type="lists_index_of" id="find_remove_pos">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_cart_remove_list">
+                                <field name="VAR">CartList</field>
+                              </block>
+                            </value>
+                            <value name="ITEM">
+                              <block type="variables_get" id="get_item_remove">
+                                <field name="VAR">Item</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="add_index_remove">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+
+  <!-- CALCULATE TOTAL PRICE -->
+  <block type="procedures_defreturn" id="calculate_total_proc" x="30" y="800">
+    <mutation/>
+    <field name="NAME">CalculateTotal</field>
+    <comment pinned="false" h="80" w="160">Returns total price of all items in cart</comment>
+    <statement name="STACK">
+      <block type="variables_set" id="set_total_zero">
+        <field name="VAR">Total</field>
+        <value name="VALUE">
+          <block type="math_number" id="zero_val">
+            <field name="NUM">0</field>
+          </block>
+        </value>
+        <next>
+          <block type="controls_forEach" id="loop_calculate">
+            <field name="VAR">CartItem</field>
+            <value name="LIST">
+              <block type="variables_get" id="get_cart_calc">
+                <field name="VAR">CartList</field>
+              </block>
+            </value>
+            <statement name="DO">
+              <block type="variables_set" id="add_to_total">
+                <field name="VAR">Total</field>
+                <value name="VALUE">
+                  <block type="math_arithmetic" id="calc_item_total">
+                    <field name="OP">ADD</field>
+                    <value name="A">
+                      <block type="variables_get" id="get_total">
+                        <field name="VAR">Total</field>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="math_arithmetic" id="qty_times_price">
+                        <field name="OP">MULTIPLY</field>
+                        <value name="A">
+                          <block type="lists_index" id="get_qty_calc">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_item_calc">
+                                <field name="VAR">CartItem</field>
+                              </block>
+                            </value>
+                            <value name="INDEX">
+                              <block type="math_number" id="idx_qty_calc">
+                                <field name="NUM">2</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="lists_index" id="get_price_calc">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_item_calc_price">
+                                <field name="VAR">CartItem</field>
+                              </block>
+                            </value>
+                            <value name="INDEX">
+                              <block type="math_number" id="idx_price_calc">
+                                <field name="NUM">3</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <block type="procedures_return" id="return_total">
+                <value name="VALUE">
+                  <block type="variables_get" id="get_final_total">
+                    <field name="VAR">Total</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+
+  <!-- FORMAT CART DISPLAY -->
+  <block type="procedures_defnoreturn" id="format_cart_display" x="400" y="800">
+    <mutation/>
+    <field name="NAME">RefreshCartDisplay</field>
+    <comment pinned="false" h="80" w="160">Refreshes the cart list display with all items</comment>
+    <statement name="STACK">
+      <block type="variables_set" id="set_display_list">
+        <field name="VAR">CartDisplayList</field>
+        <value name="VALUE">
+          <block type="lists_create_empty" id="empty_display_list"/>
+        </value>
+        <next>
+          <block type="controls_forEach" id="loop_format">
+            <field name="VAR">Item</field>
+            <value name="LIST">
+              <block type="variables_get" id="get_cart_format">
+                <field name="VAR">CartList</field>
+              </block>
+            </value>
+            <statement name="DO">
+              <block type="lists_append_list" id="append_formatted">
+                <value name="LIST">
+                  <block type="variables_get" id="get_display_list">
+                    <field name="VAR">CartDisplayList</field>
+                  </block>
+                </value>
+                <value name="ITEM">
+                  <block type="text_join" id="format_item_text">
+                    <mutation items="5"/>
+                    <value name="ADD0">
+                      <block type="lists_index" id="get_format_name">
+                        <value name="LIST">
+                          <block type="variables_get" id="get_item_format">
+                            <field name="VAR">Item</field>
+                          </block>
+                        </value>
+                        <value name="INDEX">
+                          <block type="math_number" id="idx_format_1">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="text" id="text_qty_label">
+                        <field name="TEXT"> x </field>
+                      </block>
+                    </value>
+                    <value name="ADD2">
+                      <block type="lists_index" id="get_format_qty">
+                        <value name="LIST">
+                          <block type="variables_get" id="get_item_format_qty">
+                            <field name="VAR">Item</field>
+                          </block>
+                        </value>
+                        <value name="INDEX">
+                          <block type="math_number" id="idx_format_2">
+                            <field name="NUM">2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD3">
+                      <block type="text" id="text_price_sep">
+                        <field name="TEXT"> = Rs.</field>
+                      </block>
+                    </value>
+                    <value name="ADD4">
+                      <block type="math_arithmetic" id="calc_item_price">
+                        <field name="OP">MULTIPLY</field>
+                        <value name="A">
+                          <block type="lists_index" id="get_format_price">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_item_format_price">
+                                <field name="VAR">Item</field>
+                              </block>
+                            </value>
+                            <value name="INDEX">
+                              <block type="math_number" id="idx_format_3">
+                                <field name="NUM">3</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="lists_index" id="get_format_qty_mult">
+                            <value name="LIST">
+                              <block type="variables_get" id="get_item_format_qty_mult">
+                                <field name="VAR">Item</field>
+                              </block>
+                            </value>
+                            <value name="INDEX">
+                              <block type="math_number" id="idx_format_4">
+                                <field name="NUM">2</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+
+</xml>
